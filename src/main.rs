@@ -26,21 +26,38 @@ impl Game {
         self.ships.display();
     }
 
-    fn take_shot(&mut self, board:&mut Board, pos:String) {
-        let parts: Vec<&str> = pos.split(',').collect();
+    fn place_ship(&mut self) {
+        let ships = ["Carrier","Destroyer",  "Cruiser", "Submarine"];
+        for ship in ships {
+            let mut input = String::new();
+            println!("Place your {}", ship);
+            io::stdin().read_line(&mut input).expect("Failed to read line");
+            let position = input_to_int(&input);
 
-        if let [Ok(col), Ok(row)] = [
-            parts[0].trim().parse::<usize>(),
-            parts[1].trim().parse::<usize>()
-        ]{
-            if board.cells[row][col] == CellState::Ship {
-                self.hits.cells[row][col] = CellState::Hit;
-                board.cells[row][col] = CellState::Hit;
+            for row in position[0]..=position[2]{
+                for cell in position[1]..=position[3]{
+                    self.ships.cells[row][cell] = CellState::Ship;
+                }
             }
-            else {
-                self.hits.cells[row][col] = CellState::Miss
-            }
+            self.ships.display()
         }
+    } 
+            
+
+    fn take_shot(&mut self, board:&mut Board, pos:String) {
+        
+       if let (Some::<char>(posy), Some::<char>(posx)) = (pos.chars().next(), pos.chars().nth(1)) {
+            let row = posy as usize - 'A' as usize;
+            let col = posx.to_digit(10).unwrap() as usize -1 ;
+
+                if board.cells[row][col] == CellState::Ship {
+                    self.hits.cells[row][col] = CellState::Hit;
+                    board.cells[row][col] = CellState::Hit;
+                }
+                else {
+                    self.hits.cells[row][col] = CellState::Miss
+                }
+            }
     }
 }
 
@@ -74,13 +91,28 @@ impl Board {
 }
 
 
+fn input_to_int(input: &str) -> Vec<usize> {
+    let parts: Vec<&str> = input.split_whitespace().collect();
+    let mut position: Vec<usize> = Vec::new();
+
+    for part in parts{
+        if let (Some::<char>(posy), Some::<char>(posx)) = (part.chars().next(), part.chars().nth(1)) {
+            let posy_usize = posy as usize - 'A' as usize;
+            let posx_usize = posx.to_digit(10).unwrap() -1;
+            position.push(posy_usize);
+            position.push(posx_usize.try_into().unwrap());
+        }
+    }
+    position
+}
+
 fn main() {
     let mut player = Game::new();
     let mut bot = Game::new();
     
-    player.ships.place_ship(2, 3);
+    player.place_ship();
+     
     bot.ships.place_ship(2, 3);
-    
     loop {
     println!("Fire position");
     let mut pos = String::new();
