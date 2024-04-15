@@ -29,9 +29,11 @@ impl Game {
     fn place_ship(&mut self) {
         let ships = ["Carrier","Destroyer",  "Cruiser", "Submarine"];
         for ship in ships {
+            self.ships.display();
             let mut input = String::new();
             println!("Place your {}", ship);
             io::stdin().read_line(&mut input).expect("Failed to read line");
+            std::process::Command::new("clear").status().unwrap();
             let position = input_to_int(&input);
 
             for row in position[0]..=position[2]{
@@ -39,7 +41,6 @@ impl Game {
                     self.ships.cells[row][cell] = CellState::Ship;
                 }
             }
-            self.ships.display()
         }
     } 
             
@@ -125,6 +126,7 @@ fn main() {
         println!("Fire position");
         let mut pos = String::new();
         io::stdin().read_line(&mut pos).expect("Failed to read line");
+        std::process::Command::new("clear").status().unwrap();
         player.take_shot(&mut bot.ships, pos);
         player.display_both();
         let state: bool = bot.check_game_lost();
