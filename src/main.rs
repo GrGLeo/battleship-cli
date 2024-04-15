@@ -59,6 +59,14 @@ impl Game {
                 }
             }
     }
+    
+    fn check_game_lost(&self) -> bool {
+        let ship_count = self.ships.cells.iter().flatten().filter(|&cell| *cell == CellState::Ship).count();
+        if ship_count == 0{
+            true
+        }
+        else {false}
+    }
 }
 
 struct Board {
@@ -114,11 +122,16 @@ fn main() {
      
     bot.ships.place_ship(2, 3);
     loop {
-    println!("Fire position");
-    let mut pos = String::new();
-    io::stdin().read_line(&mut pos).expect("Failed to read line");
-    player.take_shot(&mut bot.ships, pos);
-    player.display_both();
+        println!("Fire position");
+        let mut pos = String::new();
+        io::stdin().read_line(&mut pos).expect("Failed to read line");
+        player.take_shot(&mut bot.ships, pos);
+        player.display_both();
+        let state: bool = bot.check_game_lost();
+        if state {
+            println!("You won!");
+            break
+        } 
     }
 
 }
