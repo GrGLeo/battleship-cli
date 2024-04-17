@@ -1,4 +1,5 @@
 use std::io;
+use rand::Rng;
 
 #[derive(Debug, Clone, PartialEq)]
 enum CellState {
@@ -62,6 +63,17 @@ impl Game {
                     self.hits.cells[row][col] = CellState::Miss
                 }
             }
+    }
+
+    fn take_shot_from_coord(&mut self, board: &mut Board, col: usize, row: usize) {
+        if board.cells[row][col] == CellState::Ship {
+            self.hits.cells[row][col] = CellState::Hit;
+            board.cells[row][col] = CellState::Hit;
+        }
+        else {
+            self.hits.cells[row][col] = CellState::Miss;
+            board.cells[row][col] = CellState::Miss;
+        }
     }
     
     fn check_game_lost(&self) -> bool {
@@ -132,17 +144,28 @@ fn main() {
     player.place_ships();
     place_bot_ship(&mut bot);
     loop {
+        // player turn
         println!("Fire position");
         let mut pos = String::new();
         io::stdin().read_line(&mut pos).expect("Failed to read line");
         std::process::Command::new("clear").status().unwrap();
         player.take_shot(&mut bot.ships, pos);
-        player.display_both();
         let state: bool = bot.check_game_lost();
         if state {
             println!("You won!");
             break
         } 
+        // bot turn
+        let mut rng = rand::thread_rng();
+        let x: usize = rng.gen_range(0..10);
+        let y: usize = rng.gen_range(0..10);
+        bot.take_shot_from_coord(&mut player.ships, x, y);
+        let state: bool = player.check_game_lost();
+        if state {
+            println!("You lost!");
+            break
+        }
+        player.display_both();
     }
-
 }
+
