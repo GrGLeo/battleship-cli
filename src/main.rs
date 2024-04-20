@@ -1,6 +1,8 @@
 use rand::Rng;
 mod game_logic;
+mod server;
 use game_logic::Game;
+use server::start_server;
 
 fn place_bot_ship(bot_game: &mut Game) {
     let carrier: Vec<usize> = vec![0, 1, 0, 5];
@@ -24,25 +26,6 @@ fn bot_turn(bot: &mut Game, player: &mut Game) -> bool {
 }
 
 fn main() {
-    let mut player = Game::new();
-    let mut bot = Game::new();
-    
-    player.place_ships();
-    place_bot_ship(&mut bot);
-    loop {
-        // player turn
-        let state: bool = player.player_turn(&mut bot);
-        if state {
-            println!("You won!");
-            break
-        }
-        // bot turn
-        let state: bool = bot_turn(&mut bot, &mut player);
-        if state {
-            println!("You lost!");
-            break
-        }
-        player.display_both();
-    }
+    start_server()
 }
 
