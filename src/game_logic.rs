@@ -1,6 +1,6 @@
 use std::io;
 mod utils;
-use utils::input_to_int;
+use utils::{input_to_int, reorder_position};
 
 #[derive(Debug, Clone, PartialEq)]
 enum CellState {
@@ -44,7 +44,8 @@ impl Game {
          println!("Place your {} (y1x1 y2x2)", ship);
          io::stdin().read_line(&mut input).expect("Failed to read line");
          std::process::Command::new("clear").status().unwrap();
-         let position = input_to_int(&input);
+         let mut position = input_to_int(&input);
+         reorder_position(&mut position);
          let placed = self.place_pos(position);
          placed
      }
