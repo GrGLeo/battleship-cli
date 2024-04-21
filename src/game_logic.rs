@@ -86,11 +86,12 @@ impl Game {
     }
 
     pub fn player_turn(&mut self, bot: &mut Game) -> bool {
+        self.display_both();
         println!("Fire position");
         let mut pos = String::new();
         io::stdin().read_line(&mut pos).expect("Failed to read line");
-        std::process::Command::new("clear").status().unwrap();
         self.take_shot(&mut bot.ships, pos);
+        std::process::Command::new("clear").status().unwrap();
         let state: bool = bot.check_game_lost();
         state
     }
