@@ -50,6 +50,10 @@ impl Game {
      }
 
      pub fn place_pos(&mut self, position: Vec<usize>) -> bool{
+         if position.len() != 4 || position.iter().any(|&val| val > 9) {
+             println!("Invalid position format or out of bounds.");
+                 return false
+         }
          let mut visited_pos: Vec<Vec<usize>> = Vec::new();
          for row in position[0]..=position[2]{
              for cell in position[1]..=position[3]{
