@@ -42,12 +42,24 @@ impl Game {
     } 
 
      pub fn place_ship(&mut self, position: Vec<usize>){
-        for row in position[0]..=position[2]{
-            for cell in position[1]..=position[3]{
-                self.ships.cells[row][cell] = CellState::Ship;
-            }
-        }
-    }
+         let mut visited_pos: Vec<Vec<usize>> = Vec::new();
+         for row in position[0]..=position[2]{
+             for cell in position[1]..=position[3]{
+                 match self.ships.cells[row][cell] {
+                     CellState::Empty => self.ships.cells[row][cell] = CellState::Ship,
+                     CellState::Ship => {
+                         println!("Ship overllaped, will not be placed.");
+                         for pos in visited_pos {
+                             self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
+                         }
+                         return
+                     },
+                     _ => {},
+                 }
+                 visited_pos.push(vec![row, cell]);
+             }
+         }
+     }
             
 
     pub fn take_shot(&mut self, board:&mut Board, pos:String) {
