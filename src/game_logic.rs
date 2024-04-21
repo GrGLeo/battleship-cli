@@ -33,7 +33,7 @@ impl Game {
         for ship in ships {
             self.ships.display();
             let mut input = String::new();
-            println!("Place your {}", ship);
+            println!("Place your {} (y1x1 y2x2)", ship);
             io::stdin().read_line(&mut input).expect("Failed to read line");
             std::process::Command::new("clear").status().unwrap();
             let position = input_to_int(&input);
@@ -87,7 +87,7 @@ impl Game {
 
     pub fn player_turn(&mut self, bot: &mut Game) -> bool {
         self.display_both();
-        println!("Fire position");
+        println!("Fire position (yx)");
         let mut pos = String::new();
         io::stdin().read_line(&mut pos).expect("Failed to read line");
         self.take_shot(&mut bot.ships, pos);
@@ -107,18 +107,28 @@ impl Board {
         Board { cells }
     }
     
+
     fn display(&self) {
-        for row in &self.cells{
-            for cell in row{
-                match cell {
-                    CellState::Empty => print!(". "),
-                    CellState::Ship => print!("S "),
-                    CellState::Hit => print!("X "),
-                    CellState::Miss => print!("0 "),
-                }
+            print!("  "); // Empty space for alignment
+            for col_label in 0..10 {
+                print!("{} ", col_label);
             }
-            println!();
+            println!(); 
+
+            for (row_index, row) in self.cells.iter().enumerate() {
+                let ascii_code: u32 = <usize as TryInto<u32>>::try_into(row_index).unwrap() + 65;
+                let ascii = std::char::from_u32(ascii_code).unwrap();
+                print!("{} ",ascii);
+                for cell in row {
+                    match cell {
+                        CellState::Empty => print!(". "),
+                        CellState::Ship => print!("S "),
+                        CellState::Hit => print!("X "),
+                        CellState::Miss => print!("0 "),
+                    }
+                }
+                println!();
+            }
         }
-    }
 }
 

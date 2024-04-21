@@ -7,7 +7,7 @@ fn place_bot_ship(bot_game: &mut Game) {
     bot_game.place_ship(carrier);
     let destroyer: Vec<usize> = vec![4, 3, 7, 3];
     bot_game.place_ship(destroyer);
-    let cruiser: Vec<usize> = vec![9, 3, 9, 6];
+    let cruiser: Vec<usize> = vec![9, 3, 9, 5];
     bot_game.place_ship(cruiser);
     let submarine: Vec<usize> = vec![0, 7, 0, 9];
     bot_game.place_ship(submarine);
