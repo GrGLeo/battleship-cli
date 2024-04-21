@@ -4,13 +4,13 @@ use game_logic::Game;
 
 fn place_bot_ship(bot_game: &mut Game) {
     let carrier: Vec<usize> = vec![0, 1, 0, 5];
-    bot_game.place_ship(carrier);
+    bot_game.place_pos(carrier);
     let destroyer: Vec<usize> = vec![4, 3, 7, 3];
-    bot_game.place_ship(destroyer);
+    bot_game.place_pos(destroyer);
     let cruiser: Vec<usize> = vec![9, 3, 9, 5];
-    bot_game.place_ship(cruiser);
+    bot_game.place_pos(cruiser);
     let submarine: Vec<usize> = vec![0, 7, 0, 9];
-    bot_game.place_ship(submarine);
+    bot_game.place_pos(submarine);
 }
 
 fn bot_turn(bot: &mut Game, player: &mut Game) -> bool {

@@ -28,26 +28,47 @@ impl Game {
         self.ships.display();
     }
 
-     pub fn place_ships(&mut self) {
+    pub fn place_ships(&mut self) {
         let ships = ["Carrier","Destroyer",  "Cruiser", "Submarine"];
-        for ship in ships {
-            self.ships.display();
-            let mut input = String::new();
-            println!("Place your {} (y1x1 y2x2)", ship);
-            io::stdin().read_line(&mut input).expect("Failed to read line");
-            std::process::Command::new("clear").status().unwrap();
-            let position = input_to_int(&input);
-            self.place_ship(position);
-        }
-    } 
-
-     pub fn place_ship(&mut self, position: Vec<usize>){
-        for row in position[0]..=position[2]{
-            for cell in position[1]..=position[3]{
-                self.ships.cells[row][cell] = CellState::Ship;
+        for ship in &ships {
+            let mut placed: bool = false;
+            while !placed {
+                placed = self.place_ship(ship);
             }
         }
-    }
+    } 
+    
+     pub fn place_ship(&mut self, ship: &str) -> bool {
+         self.ships.display();
+         let mut input = String::new();
+         println!("Place your {} (y1x1 y2x2)", ship);
+         io::stdin().read_line(&mut input).expect("Failed to read line");
+         std::process::Command::new("clear").status().unwrap();
+         let position = input_to_int(&input);
+         let placed = self.place_pos(position);
+         placed
+     }
+
+     pub fn place_pos(&mut self, position: Vec<usize>) -> bool{
+         let mut visited_pos: Vec<Vec<usize>> = Vec::new();
+         for row in position[0]..=position[2]{
+             for cell in position[1]..=position[3]{
+                 match self.ships.cells[row][cell] {
+                     CellState::Empty => self.ships.cells[row][cell] = CellState::Ship,
+                     CellState::Ship => {
+                         println!("Ship overllaped, will not be placed.");
+                         for pos in visited_pos {
+                             self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
+                         }
+                         return false
+                     },
+                     _ => {},
+                 }
+                 visited_pos.push(vec![row, cell]);
+             }
+         }
+         return true
+     }
             
 
     pub fn take_shot(&mut self, board:&mut Board, pos:String) {
