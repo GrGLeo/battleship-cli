@@ -21,8 +21,8 @@ Welcome to Battleship! This is a simple command-line implementation of the class
 To get started with Battleship, simply clone this repository and run the game from your terminal. No additional dependencies required!
 
 ```bash
-git clone https://github.com/your-username/battleship.git
-cd battleship
+git clone https://github.com/your-username/battleship-cli.git
+cd battleship-cli
 cargo run
 ```
 
