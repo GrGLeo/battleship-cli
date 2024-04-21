@@ -1,6 +1,6 @@
 use std::io;
 mod utils;
-use utils::input_to_int;
+use utils::{input_to_int, reorder_position};
 
 #[derive(Debug, Clone, PartialEq)]
 enum CellState {
@@ -29,32 +29,42 @@ impl Game {
     }
 
     pub fn place_ships(&mut self) {
-        let ships = ["Carrier","Destroyer",  "Cruiser", "Submarine"];
-        for ship in &ships {
+        let ships = ["Carrier", "Destroyer", "Cruiser", "Submarine"];
+        let sizes = [5, 4, 3, 3];
+        for i in 0..ships.len(){
             let mut placed: bool = false;
             while !placed {
-                placed = self.place_ship(ship);
+                let mut size = sizes[i].clone();
+                placed = self.place_ship(&ships[i], &mut size);
             }
         }
     } 
     
-     pub fn place_ship(&mut self, ship: &str) -> bool {
+     pub fn place_ship(&mut self, ship: &str, size: &mut i32) -> bool {
          self.ships.display();
          let mut input = String::new();
          println!("Place your {} (y1x1 y2x2)", ship);
          io::stdin().read_line(&mut input).expect("Failed to read line");
          std::process::Command::new("clear").status().unwrap();
-         let position = input_to_int(&input);
-         let placed = self.place_pos(position);
+         let mut position = input_to_int(&input);
+         reorder_position(&mut position);
+         let placed = self.place_pos(position, size);
          placed
      }
 
-     pub fn place_pos(&mut self, position: Vec<usize>) -> bool{
+     pub fn place_pos(&mut self, position: Vec<usize>, size: &mut i32) -> bool{
+         if position.len() != 4 || position.iter().any(|&val| val > 9) {
+             println!("Invalid position format or out of bounds.");
+                 return false
+         }
          let mut visited_pos: Vec<Vec<usize>> = Vec::new();
          for row in position[0]..=position[2]{
              for cell in position[1]..=position[3]{
                  match self.ships.cells[row][cell] {
-                     CellState::Empty => self.ships.cells[row][cell] = CellState::Ship,
+                     CellState::Empty => {
+                         self.ships.cells[row][cell] = CellState::Ship;
+                         *size -= 1;
+                     },
                      CellState::Ship => {
                          println!("Ship overllaped, will not be placed.");
                          for pos in visited_pos {
@@ -67,7 +77,15 @@ impl Game {
                  visited_pos.push(vec![row, cell]);
              }
          }
-         return true
+         if *size == 0 {
+             return true
+         } 
+         else {
+             for pos in visited_pos {
+                 self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
+             }
+             return false
+         }
      }
             
 

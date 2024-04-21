@@ -13,3 +13,13 @@ pub fn input_to_int(input: &str) -> Vec<usize> {
     }
     position
 }
+
+pub fn reorder_position(position: &mut Vec<usize>){
+    if position[0] > position [2] {
+        position.swap(0,2);
+    }
+    if position[1] > position [3] {
+        position.swap(1,3);
+    }
+    
+}
