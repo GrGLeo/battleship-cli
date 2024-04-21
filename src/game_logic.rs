@@ -28,20 +28,28 @@ impl Game {
         self.ships.display();
     }
 
-     pub fn place_ships(&mut self) {
+    pub fn place_ships(&mut self) {
         let ships = ["Carrier","Destroyer",  "Cruiser", "Submarine"];
-        for ship in ships {
-            self.ships.display();
-            let mut input = String::new();
-            println!("Place your {} (y1x1 y2x2)", ship);
-            io::stdin().read_line(&mut input).expect("Failed to read line");
-            std::process::Command::new("clear").status().unwrap();
-            let position = input_to_int(&input);
-            self.place_ship(position);
+        for ship in &ships {
+            let mut placed: bool = false;
+            while !placed {
+                placed = self.place_ship(ship);
+            }
         }
     } 
+    
+     pub fn place_ship(&mut self, ship: &str) -> bool {
+         self.ships.display();
+         let mut input = String::new();
+         println!("Place your {} (y1x1 y2x2)", ship);
+         io::stdin().read_line(&mut input).expect("Failed to read line");
+         std::process::Command::new("clear").status().unwrap();
+         let position = input_to_int(&input);
+         let placed = self.place_pos(position);
+         placed
+     }
 
-     pub fn place_ship(&mut self, position: Vec<usize>){
+     pub fn place_pos(&mut self, position: Vec<usize>) -> bool{
          let mut visited_pos: Vec<Vec<usize>> = Vec::new();
          for row in position[0]..=position[2]{
              for cell in position[1]..=position[3]{
@@ -52,13 +60,14 @@ impl Game {
                          for pos in visited_pos {
                              self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
                          }
-                         return
+                         return false
                      },
                      _ => {},
                  }
                  visited_pos.push(vec![row, cell]);
              }
          }
+         return true
      }
             
 
