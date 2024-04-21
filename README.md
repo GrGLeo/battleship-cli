@@ -13,7 +13,7 @@ Welcome to Battleship! This is a simple command-line implementation of the class
 ## Features
 
 - Simple command-line interface for easy gameplay.
-- Randomized ship placement for added challenge.
+- The game displays both the players's ships board and hit board, providing a comprehensive view of the game state.
 - Fun and engaging gameplay for all ages.
 
 ## Getting Started
