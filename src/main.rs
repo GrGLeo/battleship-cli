@@ -1,130 +1,6 @@
-use std::io;
 use rand::Rng;
-
-#[derive(Debug, Clone, PartialEq)]
-enum CellState {
-    Empty,
-    Ship,
-    Hit,
-    Miss,
-}
-
-struct Game {
-    ships: Board,
-    hits: Board,
-}
-
-impl Game {
-    fn new() -> Self {
-        let ships = Board::new();
-        let hits = Board::new();
-        Game{ships, hits}
-    }
-
-    fn display_both(&self) {
-        self.hits.display();
-        println!();
-        self.ships.display();
-    }
-
-    fn place_ships(&mut self) {
-        let ships = ["Carrier","Destroyer",  "Cruiser", "Submarine"];
-        for ship in ships {
-            self.ships.display();
-            let mut input = String::new();
-            println!("Place your {}", ship);
-            io::stdin().read_line(&mut input).expect("Failed to read line");
-            std::process::Command::new("clear").status().unwrap();
-            let position = input_to_int(&input);
-            self.place_ship(position);
-        }
-    } 
-
-    fn place_ship(&mut self, position: Vec<usize>){
-        for row in position[0]..=position[2]{
-            for cell in position[1]..=position[3]{
-                self.ships.cells[row][cell] = CellState::Ship;
-            }
-        }
-    }
-            
-
-    fn take_shot(&mut self, board:&mut Board, pos:String) {
-        
-       if let (Some::<char>(posy), Some::<char>(posx)) = (pos.chars().next(), pos.chars().nth(1)) {
-            let row = posy as usize - 'A' as usize;
-            let col = posx.to_digit(10).unwrap() as usize;
-
-                if board.cells[row][col] == CellState::Ship {
-                    self.hits.cells[row][col] = CellState::Hit;
-                    board.cells[row][col] = CellState::Hit;
-                }
-                else {
-                    self.hits.cells[row][col] = CellState::Miss
-                }
-            }
-    }
-
-    fn take_shot_from_coord(&mut self, board: &mut Board, col: usize, row: usize) {
-        if board.cells[row][col] == CellState::Ship {
-            self.hits.cells[row][col] = CellState::Hit;
-            board.cells[row][col] = CellState::Hit;
-        }
-        else {
-            self.hits.cells[row][col] = CellState::Miss;
-            board.cells[row][col] = CellState::Miss;
-        }
-    }
-    
-    fn check_game_lost(&self) -> bool {
-        let ship_count = self.ships.cells.iter().flatten().filter(|&cell| *cell == CellState::Ship).count();
-        if ship_count == 0{
-            true
-        }
-        else {false}
-    }
-}
-
-struct Board {
-    cells: Vec<Vec<CellState>>,
-}
-
-impl Board {
-    fn new() -> Self {
-        let cells = vec![vec![CellState::Empty; 10]; 10];
-        Board { cells }
-    }
-    
-    fn display(&self) {
-        for row in &self.cells{
-            for cell in row{
-                match cell {
-                    CellState::Empty => print!(". "),
-                    CellState::Ship => print!("S "),
-                    CellState::Hit => print!("X "),
-                    CellState::Miss => print!("0 "),
-                }
-            }
-            println!();
-        }
-    }
-}
-
-
-fn input_to_int(input: &str) -> Vec<usize> {
-    let parts: Vec<&str> = input.split_whitespace().collect();
-    let mut position: Vec<usize> = Vec::new();
-
-    for part in parts{
-        if let (Some::<char>(posy), Some::<char>(posx)) = (part.chars().next(), part.chars().nth(1)) {
-            let posy_usize = posy as usize - 'A' as usize;
-            let posx_usize = posx.to_digit(10).unwrap();
-            position.push(posy_usize);
-            position.push(posx_usize.try_into().unwrap());
-        }
-    }
-    position
-}
+mod game_logic;
+use game_logic::Game;
 
 fn place_bot_ship(bot_game: &mut Game) {
     let carrier: Vec<usize> = vec![0, 1, 0, 5];
@@ -137,35 +13,37 @@ fn place_bot_ship(bot_game: &mut Game) {
     bot_game.place_ship(submarine);
 }
 
+fn bot_turn(bot: &mut Game, player: &mut Game) -> bool {
+
+    let mut rng = rand::thread_rng();
+    let x: usize = rng.gen_range(0..10);
+    let y: usize = rng.gen_range(0..10);
+    bot.take_shot_from_coord(&mut player.ships, x, y);
+    let state: bool = player.check_game_lost();
+    state
+}
+
 fn main() {
+    std::process::Command::new("clear").status().unwrap();
     let mut player = Game::new();
     let mut bot = Game::new();
-    
-    player.place_ships();
+
     place_bot_ship(&mut bot);
+    player.place_ships();
+
     loop {
-        // player turn
-        println!("Fire position");
-        let mut pos = String::new();
-        io::stdin().read_line(&mut pos).expect("Failed to read line");
-        std::process::Command::new("clear").status().unwrap();
-        player.take_shot(&mut bot.ships, pos);
-        let state: bool = bot.check_game_lost();
+        let state = player.player_turn(&mut bot);
         if state {
             println!("You won!");
-            break
-        } 
-        // bot turn
-        let mut rng = rand::thread_rng();
-        let x: usize = rng.gen_range(0..10);
-        let y: usize = rng.gen_range(0..10);
-        bot.take_shot_from_coord(&mut player.ships, x, y);
-        let state: bool = player.check_game_lost();
+            break;
+        }
+        let state = bot_turn(&mut bot, &mut player);
         if state {
             println!("You lost!");
-            break
+            break;
         }
-        player.display_both();
+        std::process::Command::new("clear").status().unwrap();
+        
     }
 }
 
