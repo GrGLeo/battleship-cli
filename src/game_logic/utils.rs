@@ -1,3 +1,4 @@
+use std::io;
 
 pub fn input_to_int(input: &str) -> Vec<usize> {
     let parts: Vec<&str> = input.split_whitespace().collect();
@@ -22,4 +23,15 @@ pub fn reorder_position(position: &mut Vec<usize>){
         position.swap(1,3);
     }
     
+}
+
+pub fn read_input() -> String {
+    let mut input = String::new();
+    match io::stdin().read_line(&mut input) {
+        Ok(_) => return input,
+        Err(_) => {
+            println!("Error with the input, please try again.");
+            read_input()
+        }
+    }
 }

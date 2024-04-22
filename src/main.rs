@@ -2,6 +2,7 @@ use rand::Rng;
 mod game_logic;
 use game_logic::Game;
 
+
 fn place_bot_ship(bot_game: &mut Game) {
     let carrier: Vec<usize> = vec![0, 1, 0, 5];
     bot_game.place_pos(carrier, &mut 5);
