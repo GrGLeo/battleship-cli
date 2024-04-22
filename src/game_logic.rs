@@ -63,24 +63,21 @@ impl Game {
                  match self.ships.cells[row][cell] {
                      CellState::Empty => {
                          self.ships.cells[row][cell] = CellState::Ship;
+                         visited_pos.push(vec![row, cell]);
                          *size -= 1;
                      },
                      CellState::Ship => {
-                         println!("Ship overllaped, will not be placed.");
-                         for pos in visited_pos {
-                             self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
-                         }
-                         return false
+                         break 
                      },
                      _ => {},
                  }
-                 visited_pos.push(vec![row, cell]);
              }
          }
          if *size == 0 {
              return true
          } 
          else {
+             println!("Error during placement, please provide correct coordinate.");
              for pos in visited_pos {
                  self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
              }
@@ -89,21 +86,35 @@ impl Game {
      }
             
 
-    pub fn take_shot(&mut self, board:&mut Board, pos:String) {
-        
-       if let (Some::<char>(posy), Some::<char>(posx)) = (pos.chars().next(), pos.chars().nth(1)) {
-            let row = posy as usize - 'A' as usize;
-            let col = posx.to_digit(10).unwrap() as usize;
-
-                if board.cells[row][col] == CellState::Ship {
+     pub fn take_shot(&mut self, board:&mut Board, pos:String) -> bool {
+         if pos.trim().len() != 2 {
+             println!("Wrong coordinate!");
+             return false
+         } 
+         if let (Some::<char>(posy), Some::<char>(posx)) = (pos.chars().next(), pos.chars().nth(1)) {
+             let row = posy as usize - 'A' as usize;
+             let col = posx.to_digit(10).unwrap() as usize;
+             if row > 9 || col > 9 {
+                 println!("Wrong coordinate!");
+                 return false
+             }
+            match board.cells[row][col] {
+                CellState::Ship => {
                     self.hits.cells[row][col] = CellState::Hit;
                     board.cells[row][col] = CellState::Hit;
+                },
+                CellState::Miss | CellState::Hit => {
+                    println!("Position already fired!");
+                    return false
+                },
+                _ => {
+                    self.hits.cells[row][col] = CellState::Miss;
+                    board.cells[row][col] = CellState::Miss;
                 }
-                else {
-                    self.hits.cells[row][col] = CellState::Miss
-                }
-            }
-    }
+             }
+         }
+         return true
+     }
 
     pub fn take_shot_from_coord(&mut self, board: &mut Board, col: usize, row: usize) {
         if board.cells[row][col] == CellState::Ship {
@@ -124,14 +135,17 @@ impl Game {
         else {false}
     }
 
-    pub fn player_turn(&mut self, bot: &mut Game) -> bool {
+    pub fn player_turn(&mut self, other: &mut Game) -> bool {
         self.display_both();
-        println!("Fire position (yx)");
-        let mut pos = String::new();
-        io::stdin().read_line(&mut pos).expect("Failed to read line");
-        self.take_shot(&mut bot.ships, pos);
+        loop {
+            println!("Fire position (yx)");
+            let mut pos = String::new();
+            io::stdin().read_line(&mut pos).expect("Failed to read line");
+            let shoot = self.take_shot(&mut other.ships, pos);
+            if shoot { break };
+        }
         std::process::Command::new("clear").status().unwrap();
-        let state: bool = bot.check_game_lost();
+        let state: bool = other.check_game_lost();
         state
     }
 }
