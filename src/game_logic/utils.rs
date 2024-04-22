@@ -29,6 +29,9 @@ pub fn read_input() -> String {
     let mut input = String::new();
     match io::stdin().read_line(&mut input) {
         Ok(_) => return input,
-        Err(_) => read_input()
+        Err(_) => {
+            println!("Error with the input, please try again.");
+            read_input()
+        }
     }
 }

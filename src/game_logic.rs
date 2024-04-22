@@ -42,9 +42,8 @@ impl Game {
     
      pub fn place_ship(&mut self, ship: &str, size: &mut i32) -> bool {
          self.ships.display();
-         let mut input = String::new();
          println!("Place your {} (y1x1 y2x2)", ship);
-         io::stdin().read_line(&mut input).expect("Failed to read line");
+         let input: String = read_input();
          std::process::Command::new("clear").status().unwrap();
          let mut position = input_to_int(&input);
          reorder_position(&mut position);
@@ -139,8 +138,7 @@ impl Game {
         self.display_both();
         loop {
             println!("Fire position (yx)");
-            let mut pos = String::new();
-            io::stdin().read_line(&mut pos).expect("Failed to read line");
+            let pos = read_input();
             let shoot = self.take_shot(&mut other.ships, pos);
             if shoot { break };
         }
