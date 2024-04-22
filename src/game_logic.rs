@@ -1,6 +1,6 @@
 use std::io;
 mod utils;
-use utils::{input_to_int, reorder_position};
+use utils::{input_to_int, reorder_position, read_input};
 
 #[derive(Debug, Clone, PartialEq)]
 enum CellState {
