@@ -30,6 +30,6 @@ cargo run
 
 Here's what's planned for future versions of Battleship:
 
-- Better error handling on player moves to provide clearer feedback.
-- Enhanced AI: Improve the bot AI for a more challenging single-player experience.
-- Multiplayer mode: Implement network multiplayer functionality so players can compete against each other online.
+- [x] Better error handling on player moves to provide clearer feedback.
+- [ ] Enhanced AI: Improve the bot AI for a more challenging single-player experience.
+- [ ] Multiplayer mode: Implement network multiplayer functionality so players can compete against each other online.
