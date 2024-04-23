@@ -1,4 +1,3 @@
-use std::io;
 mod utils;
 use utils::{input_to_int, reorder_position, read_input};
 
@@ -43,8 +42,12 @@ impl Game {
      pub fn place_ship(&mut self, ship: &str, size: &mut i32) -> bool {
          self.ships.display();
          println!("Place your {} (y1x1 y2x2)", ship);
-         let input: String = read_input();
+         let input_type = "ship";
+         let input: String = read_input(&input_type);
          std::process::Command::new("clear").status().unwrap();
+         if input.trim().len() != 5 {
+             return false
+         }
          let mut position = input_to_int(&input);
          reorder_position(&mut position);
          let placed = self.place_pos(position, size);
@@ -52,10 +55,6 @@ impl Game {
      }
 
      pub fn place_pos(&mut self, position: Vec<usize>, size: &mut i32) -> bool{
-         if position.len() != 4 || position.iter().any(|&val| val > 9) {
-             println!("Invalid position format or out of bounds.");
-                 return false
-         }
          let mut visited_pos: Vec<Vec<usize>> = Vec::new();
          for row in position[0]..=position[2]{
              for cell in position[1]..=position[3]{
@@ -93,23 +92,19 @@ impl Game {
          if let (Some::<char>(posy), Some::<char>(posx)) = (pos.chars().next(), pos.chars().nth(1)) {
              let row = posy as usize - 'A' as usize;
              let col = posx.to_digit(10).unwrap() as usize;
-             if row > 9 || col > 9 {
-                 println!("Wrong coordinate!");
-                 return false
-             }
-            match board.cells[row][col] {
-                CellState::Ship => {
-                    self.hits.cells[row][col] = CellState::Hit;
-                    board.cells[row][col] = CellState::Hit;
-                },
-                CellState::Miss | CellState::Hit => {
-                    println!("Position already fired!");
-                    return false
-                },
-                _ => {
-                    self.hits.cells[row][col] = CellState::Miss;
-                    board.cells[row][col] = CellState::Miss;
-                }
+             match board.cells[row][col] {
+                 CellState::Ship => {
+                     self.hits.cells[row][col] = CellState::Hit;
+                     board.cells[row][col] = CellState::Hit;
+                 },
+                 CellState::Miss | CellState::Hit => {
+                     println!("Position already fired!");
+                     return false
+                 },
+                 _ => {
+                     self.hits.cells[row][col] = CellState::Miss;
+                     board.cells[row][col] = CellState::Miss;
+                 }
              }
          }
          return true
@@ -138,7 +133,8 @@ impl Game {
         self.display_both();
         loop {
             println!("Fire position (yx)");
-            let pos = read_input();
+            let input_type = "fire";
+            let pos = read_input(&input_type);
             let shoot = self.take_shot(&mut other.ships, pos);
             if shoot { break };
         }
