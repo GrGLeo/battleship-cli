@@ -50,11 +50,11 @@ impl Game {
          }
          let mut position = input_to_int(&input);
          reorder_position(&mut position);
-         let placed = self.place_pos(position, size);
+         let placed = self.place_pos(position, size, true);
          placed
      }
 
-     pub fn place_pos(&mut self, position: Vec<usize>, size: &mut i32) -> bool{
+     pub fn place_pos(&mut self, position: Vec<usize>, size: &mut i32, verbose: bool) -> bool{
          let mut visited_pos: Vec<Vec<usize>> = Vec::new();
          for row in position[0]..=position[2]{
              for cell in position[1]..=position[3]{
@@ -75,7 +75,9 @@ impl Game {
              return true
          } 
          else {
+             if verbose {
              println!("Error during placement, please provide correct coordinate.");
+             }
              for pos in visited_pos {
                  self.ships.cells[pos[0]][pos[1]] = CellState::Empty;
              }
