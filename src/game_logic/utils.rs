@@ -61,3 +61,22 @@ fn validate_input(input_type: &str, input: &String) -> bool {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_input_to_int_valid_input() {
+        let input = "A1 B2 C3".to_string();
+        let result = input_to_int(&input);
+        assert_eq!(result, vec![0, 1, 1, 2, 2, 3]);
+    }
+
+    #[test]
+    fn test_reorder_position_needs_reordering() {
+        let mut positions = vec![3, 2, 1, 0]; // Represents positions (3,2) and (1,0)
+        reorder_position(&mut positions);
+        assert_eq!(positions, vec![1, 0, 3, 2]); // Expected reordered positions
+    }
+}
+

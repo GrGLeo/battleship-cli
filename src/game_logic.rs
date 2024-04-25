@@ -184,4 +184,9 @@ impl Board {
 #[cfg(test)]
 mod test {
     use super::*;
+    #[test]
+    fn test_game_settings() {
+        let game: Game = Game::new();
+    }
+
 }
