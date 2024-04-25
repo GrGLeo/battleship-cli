@@ -10,7 +10,7 @@ fn main() {
         std::process::Command::new("clear").status().unwrap();
         let mut player = Game::new();
         let mut bot = Bot::new();
-        //   bot.place_bot_ship();
+        bot.place_bot_ship();
         player.place_ships();
 
         loop {
