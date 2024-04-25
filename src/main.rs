@@ -9,7 +9,6 @@ fn main() {
     let mut player = Game::new();
     let mut bot = Bot::new();
     bot.place_bot_ship();
-    bot.game.display_both();
     player.place_ships();
 
     loop {
