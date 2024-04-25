@@ -60,16 +60,36 @@ impl Bot {
     }
 
     pub fn shoot(&mut self, player: &mut Game) {
-        let mut rng = rand::thread_rng();
-        let x: usize = rng.gen_range(0..10);
-        let y: usize = rng.gen_range(0..10);
-        self.game.take_shot_from_coord(&mut player.ships, x, y);
-        self.track_hit(y, x)
+        if self.searching {
+            let mut rng = rand::thread_rng();
+            let x: usize = rng.gen_range(0..10);
+            let y: usize = rng.gen_range(0..10);
+            self.game.take_shot_from_coord(&mut player.ships, x, y);
+            self.track_hit(y, x)
+        }
     }
 
     pub fn bot_turn(&mut self, player: &mut Game) -> bool {
         self.shoot(player);
         self.turn += 1;
         player.check_game_lost()
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::game_logic::CellState;
+    
+    #[test]
+    fn test_add(){
+        let mut bot = Bot::new();
+        bot.place_bot_ship();
+        let ship_count = bot.game.ships.cells.iter()
+            .flatten()
+            .filter(|&cell| *cell == CellState::Ship)
+            .count(); 
+        assert_eq!(ship_count, 15)
     }
 }

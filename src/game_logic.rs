@@ -2,7 +2,7 @@ mod utils;
 use utils::{input_to_int, reorder_position, read_input};
 
 #[derive(Debug, Clone, PartialEq)]
-enum CellState {
+pub enum CellState {
     Empty,
     Ship,
     Hit,
@@ -147,7 +147,7 @@ impl Game {
 }
 
 pub struct Board {
-    cells: Vec<Vec<CellState>>,
+    pub cells: Vec<Vec<CellState>>,
 }
 
 impl Board {
