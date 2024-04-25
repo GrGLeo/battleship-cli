@@ -1,24 +1,17 @@
 use std::io;
 
 pub fn print_win() {
-    println!(r"                                   .''.");
-    println!(r"       .''.      .        *''*    :_\/_:     .");
-    println!(r"      :_\/_:   _\(/_  .:.*_\/_*   : /\ :  .'.:.'.");
-    println!(r"  .''.: /\ :    /)\   ':'* /\ *  : '..'.  -=:o:=-");
-    println!(r" :_\/_:'.:::.  | ' *''*    * '.\'/.'_\(/_'.':'.'");
-    println!(r" : /\ : :::::  =  *_\/_*     -= o =- /)\    '  *");
-    println!(r"  '..'  ':::' === * /\ *     .'/.\'.  ' ._____");
-    println!(r"      *        |   *..*         :       |.   |' .---||");
-    println!(r"        *      |                 .---|  ||   |.-|    |");
-    println!(r"        *      |  .--|      .--  |   |  |    ||      |");
-    println!(r"     .-----.   |  |. |  ||  |  | |   |  |    ||      |");
-    println!(r" ___|       | /|\ |  |-.||.    |-|   |-.|    |`      |----");
-    println!(r"jgs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    println!(r"  &                    ~-~-~-~-~-~-~-~-~-~   /|");
-    println!(r" ejm97    )      ~-~-~-~-~-~-~-~  /|~       /_|\");
-    println!(r"        _-H-__  -~-~-~-~-~-~     /_|\    -~======-~");
-    println!(r"~-\XXXXXXXXXX/~     ~-~-~-~     /__|_\ ~-~-~-~");
-    println!(r"~-~-~-~-~-~    ~-~~-~-~-~-~    ========  ~-~-~-~");
+    println!("                                     # #  ( )");
+    println!("                                  ___#_#___|__");
+    println!("                              _  |____________|  _");
+    println!("                       _=====| | |            | | |==== _");
+    println!("                 =====| |.---------------------------. | |====");
+    println!("   <--------------------'   .  .  .  .  .  .  .  .   '--------------/");
+    println!(r"     \                                                             /");
+    println!(r"      \_______________________________________________WWS_________/");
+    println!("  wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+    println!("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+    println!("   wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww ");
     println!(r"_____________________________________________________________________");
     println!(r" /$$     /$$                                                         ");
     println!(r"|  $$   /$$/                                                         ");
