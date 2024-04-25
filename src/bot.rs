@@ -100,7 +100,7 @@ mod test {
         let x = 0;
         let y = 0;
         bot.game.take_shot_from_coord(&mut player.ships, x, y);
-        let cell =&player.ships.cells[0][0];
+        let cell = &player.ships.cells[0][0];
         assert_eq!(*cell, CellState::Miss)
 
     }
