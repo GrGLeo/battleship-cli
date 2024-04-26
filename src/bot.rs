@@ -5,10 +5,10 @@ use std::collections::VecDeque;
 
 pub struct Bot {
     pub game: Game,
-    hits: Vec<(usize, usize)>,
-    last_hit: VecDeque<CellState>,
-    last_ship_hit: (usize, usize),
-    searching: bool,
+    pub hits: Vec<(usize, usize)>,
+    pub last_hit: VecDeque<CellState>,
+    pub last_ship_hit: (usize, usize),
+    pub searching: bool,
 }
 
 impl Bot {
@@ -116,8 +116,8 @@ impl Bot {
             col = coord.1;
         }
 
-        self.game.take_shot_from_coord(&mut player.ships, row, col);
-        let celltype = &player.ships.cells[row][col];
+        self.game.take_shot_from_coord(&mut player.ships, col, row);
+        let celltype = &self.game.hits.cells[row][col];
         self.hit_tracker(celltype.clone(), row, col);
     }
 
