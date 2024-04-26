@@ -11,7 +11,7 @@ pub enum CellState {
 
 pub struct Game {
     pub ships: Board,
-    hits: Board,
+    pub hits: Board,
 }
 
 impl Game {

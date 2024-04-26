@@ -1,5 +1,5 @@
 mod game_logic;
-use game_logic::Game;
+use game_logic::{Game, CellState};
 mod bot;
 use bot::Bot;
 mod utils;
@@ -22,7 +22,8 @@ fn main() {
             }
             let state = bot.bot_turn(&mut player);
             if state {
-                println!("You lost!");
+                utils::print_lost();
+                start_again = utils::start_again();
                 break;
             }
             std::process::Command::new("clear").status().unwrap();
