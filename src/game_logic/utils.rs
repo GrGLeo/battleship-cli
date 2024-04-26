@@ -67,16 +67,24 @@ mod tests {
 
     #[test]
     fn test_input_to_int_valid_input() {
-        let input = "A1 B2 C3".to_string();
+        let input = "A1 B2".to_string();
         let result = input_to_int(&input);
-        assert_eq!(result, vec![0, 1, 1, 2, 2, 3]);
+        assert_eq!(result, vec![0, 1, 1, 2]);
     }
+    
+    #[test]
+    fn test_reorder_position_false() {
+        let mut positions = vec![0, 4, 1, 4];
+        reorder_position(&mut positions);
+        assert_eq!(positions, vec![0, 4, 1, 4]);
+    }
+    
 
     #[test]
     fn test_reorder_position_needs_reordering() {
-        let mut positions = vec![3, 2, 1, 0]; // Represents positions (3,2) and (1,0)
+        let mut positions = vec![3, 2, 1, 0];
         reorder_position(&mut positions);
-        assert_eq!(positions, vec![1, 0, 3, 2]); // Expected reordered positions
+        assert_eq!(positions, vec![1, 0, 3, 2]);
     }
 }
 

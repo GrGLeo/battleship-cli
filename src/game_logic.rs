@@ -182,11 +182,68 @@ impl Board {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
+
     #[test]
-    fn test_game_settings() {
-        let game: Game = Game::new();
+    fn test_take_shot_hit() {
+        // Test taking a shot that hits a ship
+        let mut game = Game::new();
+        let mut opponent_game = Game::new();
+        opponent_game.place_pos(vec![0, 0, 0, 4], &mut 5, false);
+        let result = game.take_shot(&mut opponent_game.ships, "A0".to_string());
+        assert_eq!(result, true);
+        assert_eq!(opponent_game.ships.cells[0][0], CellState::Hit);
+        assert_eq!(game.hits.cells[0][0], CellState::Hit);
     }
 
+    #[test]
+    fn test_take_shot_miss() {
+        // Test taking a shot that misses a ship
+        let mut game = Game::new();
+        let mut opponent_game = Game::new();
+        let result = game.take_shot(&mut opponent_game.ships, "A0".to_string());
+        assert_eq!(result, true);
+        assert_eq!(opponent_game.ships.cells[0][0], CellState::Miss);
+        assert_eq!(game.hits.cells[0][0], CellState::Miss);
+    }
+
+    #[test]
+    fn test_take_shot_invalid_position() {
+        // Test taking a shot with invalid position
+        let mut game = Game::new();
+        let mut opponent_game = Game::new();
+        let result = game.take_shot(&mut opponent_game.ships, "A".to_string());
+        assert_eq!(result, false);
+    }
+
+    #[test]
+    fn test_take_shot_already_fired() {
+        // Test taking a shot at a position that has already been fired
+        let mut game = Game::new();
+        let mut opponent_game = Game::new();
+        game.take_shot(&mut opponent_game.ships, "A0".to_string());
+        let result = game.take_shot(&mut opponent_game.ships, "A0".to_string());
+        assert_eq!(result, false);
+    }
+
+        #[test]
+    fn test_take_shot_from_coord_hit() {
+        // Test taking a shot from coordinates resulting in a hit
+        let mut game = Game::new();
+        let mut opponent_game = Game::new();
+        opponent_game.place_pos(vec![0, 0, 0, 4], &mut 5, false); // Place a ship at positions (0,0) to (0,4)
+        game.take_shot_from_coord(&mut opponent_game.ships, 0, 0); // Fire at position (0,0)
+        assert_eq!(opponent_game.ships.cells[0][0], CellState::Hit); // Expected hit cell on hits board
+    }
+
+    #[test]
+    fn test_take_shot_from_coord_miss() {
+        // Test taking a shot from coordinates resulting in a miss
+        let mut game = Game::new();
+        let mut opponent_game = Game::new();
+        game.take_shot_from_coord(&mut opponent_game.ships, 0, 0); // Fire at position (0,0)
+        assert_eq!(opponent_game.ships.cells[0][0], CellState::Miss); // Expected miss cell on hits board
+    }
 }
+
