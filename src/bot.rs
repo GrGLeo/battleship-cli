@@ -5,10 +5,10 @@ use std::collections::VecDeque;
 
 pub struct Bot {
     pub game: Game,
-    pub hits: Vec<(usize, usize)>,
-    pub last_hit: VecDeque<CellState>,
-    pub last_ship_hit: (usize, usize),
-    pub searching: bool,
+    hits: Vec<(usize, usize)>,
+    last_hit: VecDeque<CellState>,
+    last_ship_hit: (usize, usize),
+    searching: bool,
 }
 
 impl Bot {
@@ -82,6 +82,7 @@ impl Bot {
     }
 
     fn target_shoot(&mut self) -> (usize, usize) {
+        let mut attempt: u8 = 0;
         let (last_row, last_col) = self.last_ship_hit;
         let possible_coord = vec![
             (last_row.saturating_sub(1), last_col),
@@ -90,10 +91,15 @@ impl Bot {
             (last_row, last_col.saturating_add(1))
         ];
         loop {
+            if attempt > 8 {
+                self.searching = false;
+                return self.random_shoot()
+            }
             if let Some(coord) = possible_coord.choose(&mut rand::thread_rng()) {
                 if coord.0 < 10 && coord.1 < 10 && !self.hits.contains(coord) {
                     return *coord
                 } else {
+                    attempt += 1;
                     continue
                 }
             }
@@ -110,7 +116,6 @@ impl Bot {
             col = coord.1;
         }
         else {
-            println!("1");
             let coord = self.target_shoot();
             row = coord.0;
             col = coord.1;
