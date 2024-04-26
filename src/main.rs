@@ -1,5 +1,5 @@
 mod game_logic;
-use game_logic::Game;
+use game_logic::{Game, CellState};
 mod bot;
 use bot::Bot;
 mod utils;
