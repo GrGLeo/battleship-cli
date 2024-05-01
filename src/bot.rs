@@ -7,7 +7,7 @@ pub struct Bot {
     pub game: Game,
     hits: Vec<(usize, usize)>,
     last_hit: VecDeque<CellState>,
-    last_ship_hit: (usize, usize),
+    pub last_ship_pos: [(usize, usize); 2],
     searching: bool,
 }
 
@@ -17,7 +17,7 @@ impl Bot {
             game: Game::new(),
             hits: Vec::new(),
             last_hit: VecDeque::with_capacity(3),
-            last_ship_hit: (0,0),
+            last_ship_pos: [(0,0), (0,0)],
             searching: true,
         }
     }
@@ -62,12 +62,30 @@ impl Bot {
         self.hits.push((row, col));
         if celltype == CellState::Hit {
             self.searching = false;
-            self.last_ship_hit = (row, col);
+        }
+        self.last_hit.push_back(celltype.clone());
+        let mut hit_count = 0;
+        for cell_type in self.last_hit.iter() {
+            if *cell_type == CellState::Hit {
+                hit_count +=1
+            }
+        }
+        if hit_count == 1 {
+            self.last_ship_pos[0] = (row, col);
+        }
+        else if hit_count == 2 {
+            self.last_ship_pos[1] = (row, col);
         }
         else if self.last_hit.iter().all(|state| state == &CellState::Miss) {
             self.searching = true
         }
-        self.last_hit.push_back(celltype.clone());
+    }
+
+    fn detect_axis(&self) -> bool {
+        self.last_ship_pos[0].1 == self.last_ship_pos[1].1 
+    }
+
+    fn predict_ship_coordinate(&self) -> (usize, usize) {
     }
     
     fn random_shoot(&mut self) -> (usize, usize) {
@@ -83,7 +101,7 @@ impl Bot {
 
     fn target_shoot(&mut self) -> (usize, usize) {
         let mut attempt: u8 = 0;
-        let (last_row, last_col) = self.last_ship_hit;
+        let (last_row, last_col) = self.last_ship_pos[0];
         let possible_coord = vec![
             (last_row.saturating_sub(1), last_col),
             (last_row.saturating_add(1), last_col),
