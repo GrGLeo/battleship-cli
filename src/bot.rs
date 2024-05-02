@@ -97,8 +97,8 @@ impl Bot {
         let length = self.last_ship_pos.len() - 1;
         if h {
             let possible_coord = vec! [
-                (self.last_ship_pos[0].0, self.last_ship_pos[0].1 - 1),
-                (self.last_ship_pos[0].0, self.last_ship_pos[length].1 + 1)
+                (self.last_ship_pos[0].0, self.last_ship_pos[0].1.saturating_sub(1)),
+                (self.last_ship_pos[0].0, self.last_ship_pos[length].1.saturating_sub(1))
             ];
             loop {
                 if attempt > 5 {
@@ -119,8 +119,8 @@ impl Bot {
         }
         else {
             let possible_coord = vec! [
-                (self.last_ship_pos[0].0 - 1, self.last_ship_pos[0].1),
-                (self.last_ship_pos[length].0 + 1, self.last_ship_pos[length].1)
+                (self.last_ship_pos[0].0.saturating_sub(1), self.last_ship_pos[0].1),
+                (self.last_ship_pos[length].0.saturating_add(1), self.last_ship_pos[length].1)
             ];
             loop {
                 if attempt > 5 {
