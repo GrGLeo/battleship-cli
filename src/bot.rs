@@ -6,9 +6,9 @@ use std::collections::VecDeque;
 pub struct Bot {
     pub game: Game,
     hits: Vec<(usize, usize)>,
-    pub last_hit: VecDeque<CellState>,
-    pub last_ship_pos: VecDeque<(usize, usize)>, 
-    pub searching: bool,
+    last_hit: VecDeque<CellState>,
+    last_ship_pos: VecDeque<(usize, usize)>, 
+    searching: bool,
 }
 
 impl Bot {

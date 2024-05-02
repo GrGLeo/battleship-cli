@@ -14,9 +14,6 @@ fn main() {
         player.place_ships();
 
         loop {
-            println!("{:?}", bot.last_ship_pos);
-            println!("{:?}", bot.last_hit);
-            println!("{:?}", bot.searching);
             let state = player.player_turn(&mut bot.game);
             if state {
                 utils::print_win();
