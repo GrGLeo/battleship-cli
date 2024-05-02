@@ -6,9 +6,9 @@ use std::collections::VecDeque;
 pub struct Bot {
     pub game: Game,
     hits: Vec<(usize, usize)>,
-    last_hit: VecDeque<CellState>,
-    pub last_ship_pos: [(usize, usize); 2],
-    searching: bool,
+    pub last_hit: VecDeque<CellState>,
+    pub last_ship_pos: VecDeque<(usize, usize)>, 
+    pub searching: bool,
 }
 
 impl Bot {
@@ -17,7 +17,7 @@ impl Bot {
             game: Game::new(),
             hits: Vec::new(),
             last_hit: VecDeque::with_capacity(3),
-            last_ship_pos: [(0,0), (0,0)],
+            last_ship_pos: VecDeque::with_capacity(3), 
             searching: true,
         }
     }
@@ -60,32 +60,92 @@ impl Bot {
     // Shooting configuration
     pub fn hit_tracker(&mut self, celltype: CellState, row: usize, col: usize) {
         self.hits.push((row, col));
+        self.last_hit.push_back(celltype.clone());
+        if self.last_hit.len() > 3 {
+            self.last_hit.pop_front();
+        }
         if celltype == CellState::Hit {
             self.searching = false;
-        }
-        self.last_hit.push_back(celltype.clone());
-        let mut hit_count = 0;
-        for cell_type in self.last_hit.iter() {
-            if *cell_type == CellState::Hit {
-                hit_count +=1
+
+            if self.last_ship_pos.len() == 0 {
+                self.last_ship_pos.push_back((row, col));
+            }
+            else {
+                if self.last_ship_pos[0].0 > row || self.last_ship_pos[0].1 > col {
+                    self.last_ship_pos.push_front((row, col));
+                }
+                else {
+                    self.last_ship_pos.push_back((row, col));
+                }
             }
         }
-        if hit_count == 1 {
-            self.last_ship_pos[0] = (row, col);
-        }
-        else if hit_count == 2 {
-            self.last_ship_pos[1] = (row, col);
-        }
         else if self.last_hit.iter().all(|state| state == &CellState::Miss) {
-            self.searching = true
+            self.searching = true;
+            self.last_ship_pos = VecDeque::with_capacity(5);
+        }
+        
+    }
+
+    pub fn detect_axis(&self) -> bool {
+        // return true if ship is horizontal
+        self.last_ship_pos[0].0 == self.last_ship_pos[1].0 
+    }
+
+    fn predict_ship_coordinate(&mut self) -> (usize, usize) {
+        let mut attempt: u8 = 0;
+        let h = self.detect_axis();
+        let length = self.last_ship_pos.len() - 1;
+        if h {
+            let possible_coord = vec! [
+                (self.last_ship_pos[0].0, self.last_ship_pos[0].1 - 1),
+                (self.last_ship_pos[0].0, self.last_ship_pos[length].1 + 1)
+            ];
+            loop {
+                if attempt > 2 {
+                    self.searching = false;
+                    self.last_ship_pos = VecDeque::with_capacity(5);
+                    return self.random_shoot()
+                }
+                if let Some(coord) = possible_coord.choose(&mut rand::thread_rng()) {
+                    if coord.0 < 10 && coord.1 < 10 && !self.hits.contains(coord) {
+                        return *coord
+                    } else {
+                        attempt += 1;
+                        continue
+                    }
+                }
+
+            }
+        }
+        else {
+            (0,0)
         }
     }
 
-    fn detect_axis(&self) -> bool {
-        self.last_ship_pos[0].1 == self.last_ship_pos[1].1 
-    }
-
-    fn predict_ship_coordinate(&self) -> (usize, usize) {
+    fn target_around_ship(&mut self) -> (usize, usize) {
+        let mut attempt: u8 = 0;
+        let (last_row, last_col) = self.last_ship_pos[0];
+        let possible_coord = vec![
+            (last_row.saturating_sub(1), last_col),
+            (last_row.saturating_add(1), last_col),
+            (last_row, last_col.saturating_sub(1)),
+            (last_row, last_col.saturating_add(1))
+        ];
+        loop {
+            if attempt > 8 {
+                self.searching = false;
+                self.last_ship_pos = VecDeque::with_capacity(5);
+                return self.random_shoot()
+            }
+            if let Some(coord) = possible_coord.choose(&mut rand::thread_rng()) {
+                if coord.0 < 10 && coord.1 < 10 && !self.hits.contains(coord) {
+                    return *coord
+                } else {
+                    attempt += 1;
+                    continue
+                }
+            }
+        }
     }
     
     fn random_shoot(&mut self) -> (usize, usize) {
@@ -100,27 +160,11 @@ impl Bot {
     }
 
     fn target_shoot(&mut self) -> (usize, usize) {
-        let mut attempt: u8 = 0;
-        let (last_row, last_col) = self.last_ship_pos[0];
-        let possible_coord = vec![
-            (last_row.saturating_sub(1), last_col),
-            (last_row.saturating_add(1), last_col),
-            (last_row, last_col.saturating_sub(1)),
-            (last_row, last_col.saturating_add(1))
-        ];
-        loop {
-            if attempt > 8 {
-                self.searching = false;
-                return self.random_shoot()
-            }
-            if let Some(coord) = possible_coord.choose(&mut rand::thread_rng()) {
-                if coord.0 < 10 && coord.1 < 10 && !self.hits.contains(coord) {
-                    return *coord
-                } else {
-                    attempt += 1;
-                    continue
-                }
-            }
+        if self.last_ship_pos.len() < 2 {
+            self.target_around_ship()
+        }
+        else {
+            self.predict_ship_coordinate()
         }
     }
 
