@@ -34,6 +34,6 @@ Here's what's planned for future versions of Battleship:
 ### Enhanced AI: Improve the bot AI for a more challenging single-player experience.
 - [x] Ship placement is random
 - [x] Switch between searching ship and targeting ship
-- [ ] Better logic around targeting a ship.
+- [x] Better logic around targeting a ship.
 ### Multiplayer
 - [ ] Multiplayer mode: Implement network multiplayer functionality so players can compete against each other online.
