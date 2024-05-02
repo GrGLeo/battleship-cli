@@ -101,8 +101,8 @@ impl Bot {
                 (self.last_ship_pos[0].0, self.last_ship_pos[length].1 + 1)
             ];
             loop {
-                if attempt > 2 {
-                    self.searching = false;
+                if attempt > 5 {
+                    self.searching = true;
                     self.last_ship_pos = VecDeque::with_capacity(5);
                     return self.random_shoot()
                 }
@@ -118,7 +118,25 @@ impl Bot {
             }
         }
         else {
-            (0,0)
+            let possible_coord = vec! [
+                (self.last_ship_pos[0].0 - 1, self.last_ship_pos[0].1),
+                (self.last_ship_pos[length].0 + 1, self.last_ship_pos[length].1)
+            ];
+            loop {
+                if attempt > 5 {
+                    self.searching = true;
+                    self.last_ship_pos = VecDeque::with_capacity(5);
+                    return self.random_shoot()
+                }
+                if let Some(coord) = possible_coord.choose(&mut rand::thread_rng()) {
+                    if coord.0 < 10 && coord.1 < 10 && !self.hits.contains(coord) {
+                        return *coord
+                    } else {
+                        attempt += 1;
+                        continue
+                    }
+                }
+            }
         }
     }
 
@@ -172,7 +190,6 @@ impl Bot {
         let (row, col);
 
         if self.searching {
-            println!("0");
             let coord = self.random_shoot();
             row = coord.0;
             col = coord.1;
