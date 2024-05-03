@@ -1,4 +1,17 @@
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::io;
+
+pub fn logger(player: &str) {
+    let filepath = String::from("game.log");
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(filepath)
+        .expect("Failed to open file");
+    file.write_all(player.as_bytes()).expect("Failed to write line!");
+    writeln!(file).expect("Failed to write new line!");
+}
 
 pub fn print_win() {
     println!("                                      # #  ( )");
@@ -58,3 +71,6 @@ pub fn start_again() -> bool {
         }
     }
 }
+
+
+
