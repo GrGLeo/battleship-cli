@@ -15,14 +15,12 @@ fn main() {
 
         loop {
             let state = player.player_turn(&mut bot.game);
-            utils::logger("player");
             if state {
                 utils::print_win();
                 start_again = utils::start_again();
                 break;
             }
             let state = bot.bot_turn(&mut player);
-            utils::logger("bot");
             if state {
                 utils::print_lost();
                 start_again = utils::start_again();
