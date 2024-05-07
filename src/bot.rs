@@ -2,6 +2,7 @@ use rand::Rng;
 use rand::seq::SliceRandom;
 use crate::{Game,CellState};
 use std::collections::VecDeque;
+use crate::utils::logger;
 
 pub struct Bot {
     pub game: Game,
@@ -203,6 +204,7 @@ impl Bot {
         self.game.take_shot_from_coord(&mut player.ships, col, row);
         let celltype = &self.game.hits.cells[row][col];
         self.hit_tracker(celltype.clone(), row, col);
+        logger("bot", &(row, col))
     }
 
     pub fn bot_turn(&mut self, player: &mut Game) -> bool {

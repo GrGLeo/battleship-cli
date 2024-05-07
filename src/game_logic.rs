@@ -1,4 +1,5 @@
 mod utils;
+use crate::utils::logger;
 use utils::{input_to_int, reorder_position, read_input};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -91,9 +92,11 @@ impl Game {
              println!("Wrong coordinate!");
              return false
          } 
+         let mut row: usize = 0;
+         let mut col: usize = 0;
          if let (Some::<char>(posy), Some::<char>(posx)) = (pos.chars().next(), pos.chars().nth(1)) {
-             let row = posy as usize - 'A' as usize;
-             let col = posx.to_digit(10).unwrap() as usize;
+             row = posy as usize - 'A' as usize;
+             col = posx.to_digit(10).unwrap() as usize;
              match board.cells[row][col] {
                  CellState::Ship => {
                      self.hits.cells[row][col] = CellState::Hit;
@@ -109,6 +112,7 @@ impl Game {
                  }
              }
          }
+         logger("player", &(row, col));
          return true
      }
 
